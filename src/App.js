@@ -3,24 +3,36 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from './components/Button';
 import Display from './components/Display';
 
+const initialState = {
+  displayValue: '0',
+  clearDisplay: false,
+  operation: null,
+  values: [0,0],
+  currentIndex: 0 
+};
+
 export default class App extends Component {
 
-  state = {
-    displayValue: '0',
-    operation: ''
-  };
+  state = {...initialState};
+
   addDigit = n => {
-    // let newDisplayValue = '';
-    // if(this.state.displayValue === '0') {
-    //   newDisplayValue = n;
-    // } else {
-    //   newDisplayValue += n;
-    // }
-    
-    this.setState({displayValue: n});
+    if(n === '.' && this.state.displayValue.includes('.')) {
+      return;
+    }    
+    const clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay;
+    const currentValue = clearDisplay ? '' : this.state.displayValue;
+    const displayValue = currentValue + n;
+    this.setState({ displayValue, clearDisplay: false });
+
+    if( n !== '.') {
+      const newValue = parseFloat(displayValue);
+      const values = [...this.state.values];
+      values[this.state.currentIndex] = newValue;
+      this.setState({ values });
+    }
   };
   clearMemory = () => {
-    this.setState({ displayValue: '0'})
+    this.setState({ ...initialState});
   };
   setOperation = operation => {
     this.setState({operation});
